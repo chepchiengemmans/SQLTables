@@ -196,6 +196,7 @@ JOIN orders o ON od.orderNumber = o.orderNumber
 GROUP BY p.productName, p.productCode
 ORDER BY numpurchasers DESC;
 """, conn)
+df_total_customers
 
 # %% [markdown]
 # ### Step 9
@@ -208,8 +209,10 @@ ORDER BY numpurchasers DESC;
 df_customers = pd.read_sql("""
 SELECT o.officeCode, o.city, COUNT(c.customerNumber) AS n_customers
 FROM offices o
-LEFT JOIN customers c ON o.officeCode = c.salesRepEmployeeNumber
-GROUP BY o.officeCode, o.city;
+JOIN employees e ON o.officeCode = e.officeCode
+LEFT JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber
+GROUP BY o.officeCode, o.city
+ORDER BY n_customers DESC;
 """, conn)
 df_customers
 
@@ -238,7 +241,7 @@ WITH ProductCustomers AS (
     GROUP BY p.productCode
     HAVING num_customers < 20
 )
-SELECT e.employeeNumber, e.firstName, e.lastName, o.city, o.officeCode
+SELECT DISTINCT e.employeeNumber, e.firstName, e.lastName, o.city, o.officeCode
 FROM employees e
 JOIN offices o ON e.officeCode = o.officeCode
 JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber
