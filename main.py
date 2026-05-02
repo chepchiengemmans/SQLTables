@@ -211,8 +211,7 @@ SELECT o.officeCode, o.city, COUNT(c.customerNumber) AS n_customers
 FROM offices o
 JOIN employees e ON o.officeCode = e.officeCode
 LEFT JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber
-GROUP BY o.officeCode, o.city
-ORDER BY n_customers DESC;
+GROUP BY o.officeCode, o.city;
 """, conn)
 df_customers
 
